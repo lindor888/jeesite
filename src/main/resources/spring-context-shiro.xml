@@ -16,6 +16,7 @@
 			<value>
 				/static/** = anon
 				/userfiles/** = anon
+				${adminPath}/order/sysOrder/openOrder = anon
 				${adminPath}/cas = cas
 				${adminPath}/login = authc
 				${adminPath}/logout = logout
@@ -80,21 +81,21 @@
 	</bean>
 
 	<!-- 自定义Session存储容器 -->
-<!-- 	<bean id="sessionDAO" class="com.thinkgem.jeesite.common.security.shiro.session.JedisSessionDAO"> -->
-<!-- 		<property name="sessionIdGenerator" ref="idGen" /> -->
-<!-- 		<property name="sessionKeyPrefix" value="${redis.keyPrefix}_session_" /> -->
-<!-- 	</bean> -->
-	<bean id="sessionDAO" class="com.thinkgem.jeesite.common.security.shiro.session.CacheSessionDAO">
-		<property name="sessionIdGenerator" ref="idGen" />
-		<property name="activeSessionsCacheName" value="activeSessionsCache" />
-		<property name="cacheManager" ref="shiroCacheManager" />
-	</bean>
-	
+ 	<bean id="sessionDAO" class="com.thinkgem.jeesite.common.security.shiro.session.JedisSessionDAO">
+ 		<property name="sessionIdGenerator" ref="idGen" />
+ 		<property name="sessionKeyPrefix" value="${redis.keyPrefix}_session_" />
+ 	</bean>
+	<!--<bean id="sessionDAO" class="com.thinkgem.jeesite.common.security.shiro.session.CacheSessionDAO">-->
+		<!--<property name="sessionIdGenerator" ref="idGen" />-->
+		<!--<property name="activeSessionsCacheName" value="activeSessionsCache" />-->
+		<!--<property name="cacheManager" ref="shiroCacheManager" />-->
+	<!--</bean>-->
+
 	<!-- 定义授权缓存管理器 -->
-<!-- 	<bean id="shiroCacheManager" class="com.thinkgem.jeesite.common.security.shiro.cache.SessionCacheManager" /> -->
-	<bean id="shiroCacheManager" class="org.apache.shiro.cache.ehcache.EhCacheManager">
-		<property name="cacheManager" ref="cacheManager"/>
-	</bean>
+ 	<bean id="shiroCacheManager" class="com.thinkgem.jeesite.common.security.shiro.cache.JedisCacheManager" />
+	<!--<bean id="shiroCacheManager" class="org.apache.shiro.cache.ehcache.EhCacheManager">-->
+		<!--<property name="cacheManager" ref="cacheManager"/>-->
+	<!--</bean>-->
 	
 	<!-- 保证实现了Shiro内部lifecycle函数的bean执行 -->
 	<bean id="lifecycleBeanPostProcessor" class="org.apache.shiro.spring.LifecycleBeanPostProcessor"/>

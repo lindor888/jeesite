@@ -4,7 +4,7 @@
 	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 	version="2.5">
 
-	<display-name>JeeSite</display-name>
+	<display-name>JeeOrder</display-name>
 
 	<!-- Context ConfigLocation -->
 	<context-param>
@@ -208,5 +208,7 @@
 		<error-code>404</error-code>
 		<location>/WEB-INF/views/error/404.jsp</location>
 	</error-page>
+
+	<distributable/>
 
 </web-app>

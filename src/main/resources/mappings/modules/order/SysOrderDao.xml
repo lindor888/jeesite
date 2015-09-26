@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.order.dao.SysOrderDao">
+    
+	<sql id="sysOrderColumns">
+		a.id AS "id",
+		a.cid AS "cid",
+		a.producttype AS "producttype",
+		a.product AS "product",
+		a.order_date AS "orderDate",
+		a.amount AS "amount",
+		a.customer_name AS "customerName",
+		a.customer_phone AS "customerPhone",
+		a.customer_address AS "customerAddress",
+		a.order_name AS "orderName",
+		a.remarks AS "remarks",
+		a.status AS "status",
+		a.operremarks AS "operremarks",
+		a.linkAddr AS "linkAddr",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="sysOrderJoins">
+	</sql>
+    
+	<select id="get" resultType="SysOrder">
+		SELECT 
+			<include refid="sysOrderColumns"/>
+		FROM sys_order a
+		<include refid="sysOrderJoins"/>
+		WHERE a.id = #{id}
+	</select>
+
+	<sql id="list_where">
+		a.del_flag = #{DEL_FLAG_NORMAL}
+		<if test="cid != null and cid != ''">
+			AND a.cid = #{cid}
+		</if>
+		<if test="producttype != null and producttype != ''">
+			AND a.producttype = #{producttype}
+		</if>
+		<if test="product != null and product != ''">
+			AND a.product LIKE
+			<if test="dbName == 'oracle'">#{product}||'%'</if>
+			<if test="dbName == 'mssql'">#{product}+'%'</if>
+			<if test="dbName == 'mysql'">concat(#{product},'%')</if>
+		</if>
+		<if test="customerPhone != null and customerPhone != ''">
+			AND a.customerPhone LIKE
+			<if test="dbName == 'oracle'">#{product}||'%'</if>
+			<if test="dbName == 'mssql'">#{product}+'%'</if>
+			<if test="dbName == 'mysql'">concat(#{product},'%')</if>
+		</if>
+		<if test="beginOrderDate != null and endOrderDate != null and beginOrderDate != '' and endOrderDate != ''">
+			AND a.order_date BETWEEN #{beginOrderDate} AND #{endOrderDate}
+		</if>
+		<if test="customerName != null and customerName != ''">
+			AND a.customer_name LIKE
+			<if test="dbName == 'oracle'">#{customerName}||'%'</if>
+			<if test="dbName == 'mssql'">#{customerName}+'%'</if>
+			<if test="dbName == 'mysql'">concat(#{customerName},'%')</if>
+		</if>
+		<if test="status != null and status != ''">
+			AND a.status = #{status}
+		</if>
+	</sql>
+
+	<select id="findList" resultType="SysOrder">
+		SELECT 
+			<include refid="sysOrderColumns"/>
+		FROM sys_order a
+		<include refid="sysOrderJoins"/>
+		<where>
+			<include refid="list_where"/>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="SysOrder">
+		SELECT 
+			<include refid="sysOrderColumns"/>
+		FROM sys_order a
+		<include refid="sysOrderJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="listSummary" resultType="com.thinkgem.jeesite.modules.order.entity.SysOrderSummary">
+		SELECT
+			a.status, count(1) statusCount, sum(a.amount) statusAmout
+		FROM sys_order a
+		<include refid="sysOrderJoins"/>
+		<where>
+			<include refid="list_where"/>
+		</where>
+		group BY a.status
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO sys_order(
+			id,
+			cid,
+			producttype,
+			product,
+			order_date,
+			amount,
+			customer_name,
+			customer_phone,
+			customer_address,
+			order_name,
+			remarks,
+			status,
+			operremarks,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag
+		) VALUES (
+			#{id},
+			#{cid},
+			#{producttype},
+			#{product},
+			#{orderDate},
+			#{amount},
+			#{customerName},
+			#{customerPhone},
+			#{customerAddress},
+			#{orderName},
+			#{remarks},
+			#{status},
+			#{operremarks},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE sys_order SET 	
+			cid = #{cid},
+			producttype = #{producttype},
+			product = #{product},
+			order_date = #{orderDate},
+			amount = #{amount},
+			customer_name = #{customerName},
+			customer_phone = #{customerPhone},
+			customer_address = #{customerAddress},
+			order_name = #{orderName},
+			remarks = #{remarks},
+			status = #{status},
+			operremarks = #{operremarks},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE sys_order SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+
+	<select id="findListByIds" resultType="SysOrder" >
+		SELECT
+		<include refid="sysOrderColumns"/>
+		FROM sys_order a
+		<include refid="sysOrderJoins"/>
+		WHERE a.id IN
+		<foreach collection="list" item="idStr"  open="(" separator="," close=")">
+			#{idStr}
+		</foreach>
+
+	</select>
+	
+</mapper>

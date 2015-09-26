@@ -3,10 +3,11 @@
  */
 package com.thinkgem.jeesite.common.utils;
 
-import java.text.ParseException;
-import java.util.Date;
-
 import org.apache.commons.lang3.time.DateFormatUtils;
+
+import java.text.ParseException;
+import java.util.Calendar;
+import java.util.Date;
 
 /**
  * 日期工具类, 继承org.apache.commons.lang.time.DateUtils类
@@ -169,6 +170,18 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 		long afterTime = after.getTime();
 		return (afterTime - beforeTime) / (1000 * 60 * 60 * 24);
 	}
+
+	public static Date add(Date date, int field, int amount) {
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(date);
+		cal.add(field, amount);
+		return cal.getTime();
+	}
+
+	public static Date getYestoday(Date date) {
+		return add(date, Calendar.DATE, -1);
+	}
+
 	
 	/**
 	 * @param args
