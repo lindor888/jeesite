@@ -3,6 +3,7 @@
  */
 package com.thinkgem.jeesite.modules.order.entity;
 
+import com.thinkgem.jeesite.common.utils.DateUtils;
 import com.thinkgem.jeesite.common.utils.excel.annotation.ExcelField;
 import org.hibernate.validator.constraints.Length;
 import java.util.Date;
@@ -43,6 +44,12 @@ public class SysOrder extends DataEntity<SysOrder> {
 
 	private String linkAddr; //下单页面
 
+	private String orderSource; //下单来路
+
+	private String orderIP; //下单IP
+
+	private String custRemark;
+
 	private String searchType; //过滤模式
 	
 	public SysOrder() {
@@ -54,7 +61,7 @@ public class SysOrder extends DataEntity<SysOrder> {
 	}
 
 	@Length(min=0, max=32, message="CID长度必须介于 0 和 32 之间")
-	@ExcelField(title="CID", type=1, align=1)
+//	@ExcelField(title="CID", type=1, align=1)
 	public String getCid() {
 		return cid;
 	}
@@ -73,7 +80,7 @@ public class SysOrder extends DataEntity<SysOrder> {
 	}
 	
 	@Length(min=0, max=64, message="商品名称长度必须介于 0 和 64 之间")
-	@ExcelField(title="产品名称", type=1, align=1)
+	@ExcelField(title="订购产品", type=1, align=1, sort = 5)
 	public String getProduct() {
 		return product;
 	}
@@ -81,28 +88,35 @@ public class SysOrder extends DataEntity<SysOrder> {
 	public void setProduct(String product) {
 		this.product = product;
 	}
-	
+
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-	@ExcelField(title="下单时间", type=1, align=1, sort=1)
 	public Date getOrderDate() {
 		return orderDate;
+	}
+
+	@ExcelField(title="创建时间", type=1, align=1, sort=7)
+	public String getOrderDateStr() {
+		return DateUtils.formatDate(this.orderDate, "yyyy/MM/dd HH:mm");
 	}
 
 	public void setOrderDate(Date orderDate) {
 		this.orderDate = orderDate;
 	}
 
-	@ExcelField(title="订单金额", type=1, align=1)
 	public Double getAmount() {
 		return amount;
 	}
 
+	@ExcelField(title="金额", type=1, align=1, sort = 6)
+	public String getAmountStr() {
+		return String.valueOf(amount);
+	}
 	public void setAmount(Double amount) {
 		this.amount = amount;
 	}
 	
 	@Length(min=0, max=64, message="客户名称长度必须介于 0 和 64 之间")
-	@ExcelField(title="客户名称", type=1, align=1)
+	@ExcelField(title="联系人", type=1, align=1, sort = 0)
 	public String getCustomerName() {
 		return customerName;
 	}
@@ -112,8 +126,19 @@ public class SysOrder extends DataEntity<SysOrder> {
 	}
 	
 	@Length(min=0, max=64, message="客户电话长度必须介于 0 和 64 之间")
+	@ExcelField(title="电话1", type=1, align=1, sort = 1)
 	public String getCustomerPhone() {
 		return customerPhone;
+	}
+
+	@ExcelField(title="电话2", type=1, align=1, sort = 2)
+	public String getCustomerPhone2() {
+		return "";
+	}
+
+	@ExcelField(title="电话3", type=1, align=1, sort = 3)
+	public String getCustomerPhone3() {
+		return "";
 	}
 
 	public void setCustomerPhone(String customerPhone) {
@@ -121,7 +146,7 @@ public class SysOrder extends DataEntity<SysOrder> {
 	}
 	
 	@Length(min=0, max=512, message="收货地址长度必须介于 0 和 512 之间")
-	@ExcelField(title="收货地址", type=1, align=1)
+	@ExcelField(title="地址", type=1, align=1, sort = 4)
 	public String getCustomerAddress() {
 		return customerAddress;
 	}
@@ -140,7 +165,7 @@ public class SysOrder extends DataEntity<SysOrder> {
 	}
 	
 	@Length(min=0, max=13, message="订单状态长度必须介于 0 和 13 之间")
-	@ExcelField(title="订单状态", type=1, align=1, dictType = "ordState")
+//	@ExcelField(title="订单状态", type=1, align=1, dictType = "ordState")
 	public String getStatus() {
 		return status;
 	}
@@ -150,7 +175,6 @@ public class SysOrder extends DataEntity<SysOrder> {
 	}
 	
 	@Length(min=0, max=512, message="客服备注信息长度必须介于 0 和 512 之间")
-	@ExcelField(title="客户备注", type=1, align=1)
 	public String getOperremarks() {
 		return operremarks;
 	}
@@ -189,5 +213,31 @@ public class SysOrder extends DataEntity<SysOrder> {
 
 	public void setSearchType(String searchType) {
 		this.searchType = searchType;
+	}
+
+	@Length(min=0, max=512, message="下单来路长度必须介于 0 和 512 之间")
+	public String getOrderSource() {
+		return orderSource;
+	}
+
+	public void setOrderSource(String orderSource) {
+		this.orderSource = orderSource;
+	}
+	@Length(min=0, max=64, message="下单IP长度必须介于 0 和 64 之间")
+	public String getOrderIP() {
+		return orderIP;
+	}
+
+	public void setOrderIP(String orderIP) {
+		this.orderIP = orderIP;
+	}
+
+	@ExcelField(title="备注", type=1, align=1, sort = 8)
+	public String getCustRemark() {
+		return "cid=" + this.cid + "下单时间：" + DateUtils.formatDateTime(this.orderDate) + "备注：" + this.remarks;
+	}
+
+	public void setCustRemark(String custRemark) {
+		this.custRemark = custRemark;
 	}
 }

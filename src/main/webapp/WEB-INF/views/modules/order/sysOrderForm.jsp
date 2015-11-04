@@ -26,7 +26,7 @@
 						required: true
 					},
 					customerPhone: {
-						mobile: true
+						phone: true
 					},
 					customerAddress: {
 						required: true
@@ -131,7 +131,18 @@
 				</form:select>
 			</div>
 		</div>
-
+		<div class="control-group">
+			<label class="control-label">下单来路：</label>
+			<div class="controls">
+				<form:input path="orderSource" htmlEscape="false" maxlength="256" class="input-xlarge "/>
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label">下单IP：</label>
+			<div class="controls">
+				<form:input path="orderIP" htmlEscape="false" maxlength="64" class="input-xlarge "/>
+			</div>
+		</div>
 		<div class="control-group">
 			<label class="control-label">备注信息：</label>
 			<div class="controls">

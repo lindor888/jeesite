@@ -13,6 +13,7 @@ import com.thinkgem.jeesite.common.utils.excel.ExportExcel;
 import com.thinkgem.jeesite.modules.order.entity.SysOrderSummary;
 import com.thinkgem.jeesite.modules.sys.entity.Log;
 import com.thinkgem.jeesite.modules.sys.entity.User;
+import com.thinkgem.jeesite.modules.sys.utils.DictUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.ListUtils;
 import org.apache.commons.lang3.ArrayUtils;
@@ -21,10 +22,7 @@ import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.thinkgem.jeesite.common.config.Global;
@@ -102,8 +100,6 @@ public class SysOrderController extends BaseController {
 			sysOrder.setEndOrderDate(lastDate);
 		}
 
-		Page<SysOrder> page = sysOrderService.findPage(new Page<SysOrder>(request, response), sysOrder);
-
 		List<SysOrderSummary> sysOrderSummaries = sysOrderService.listSummary(sysOrder);
 
 		Integer totalCount = 0;
@@ -116,9 +112,12 @@ public class SysOrderController extends BaseController {
 		}
 		model.addAttribute("totalCount", totalCount);
 		model.addAttribute("totalAmount", totalAmount);
+
+		Page<SysOrder> page = sysOrderService.findPage(new Page<SysOrder>(request, response), sysOrder);
+
 		model.addAttribute("page", page);
 		model.addAttribute("orderSummary", sysOrderSummaries);
-
+		model.addAttribute("ordStateSelect", DictUtils.getDictList("ordState"));
 		return "modules/order/sysOrderList";
 	}
 
@@ -127,6 +126,27 @@ public class SysOrderController extends BaseController {
 	public String form(SysOrder sysOrder, Model model) {
 		model.addAttribute("sysOrder", sysOrder);
 		return "modules/order/sysOrderForm";
+	}
+
+	@RequiresPermissions("order:sysOrder:edit")
+	@RequestMapping(value = "edit")
+	public String edit(SysOrder sysOrder, Model model) {
+		model.addAttribute("sysOrder", sysOrder);
+		return "modules/order/sysOrderFormView";
+	}
+
+	@RequiresPermissions("order:sysOrder:edit")
+	@RequestMapping(value = "changeStatus")
+	public String changeStatus(SysOrder sysOrder, Model model, RedirectAttributes redirectAttributes) {
+		if (!beanValidator(model, sysOrder)) {
+			return edit(sysOrder, model);
+		}
+		SysOrder sysOrder1 = get(sysOrder.getId());
+		sysOrder1.setStatus(sysOrder.getStatus());
+		sysOrder1.setOperremarks(sysOrder.getOperremarks());
+		sysOrderService.save(sysOrder1);
+		addMessage(redirectAttributes, "保存订单成功");
+		return "redirect:" + Global.getAdminPath() + "/order/sysOrder/?repage";
 	}
 
 	@RequiresPermissions("order:sysOrder:edit")
@@ -144,6 +164,29 @@ public class SysOrderController extends BaseController {
 	@RequestMapping(value = "delete")
 	public String delete(SysOrder sysOrder, RedirectAttributes redirectAttributes) {
 		sysOrderService.delete(sysOrder);
+		addMessage(redirectAttributes, "删除订单成功");
+		return "redirect:" + Global.getAdminPath() + "/order/sysOrder/?repage";
+	}
+
+	@RequiresPermissions("order:sysOrder:edit")
+	@RequestMapping(value = "batchDelete")
+	public String batchDelete(SysOrder sysOrder, HttpServletRequest request, RedirectAttributes redirectAttributes) {
+
+		String selectedValue = request.getParameter("selectedValue");
+		List<SysOrder> result = null;
+		if (!StringUtils.isEmpty(selectedValue)) {
+			String[] ids = StringUtils.split(selectedValue, ",");
+			List idList = new ArrayList();
+			for (String id : ids) {
+				idList.add(id);
+			}
+			result = sysOrderService.findListByIds(idList);
+			if (!CollectionUtils.isEmpty(result)) {
+				for (SysOrder order : result) {
+					sysOrderService.delete(order);
+				}
+			}
+		}
 		addMessage(redirectAttributes, "删除订单成功");
 		return "redirect:" + Global.getAdminPath() + "/order/sysOrder/?repage";
 	}
@@ -175,7 +218,7 @@ public class SysOrderController extends BaseController {
 				Page<SysOrder> page = sysOrderService.findPage(new Page<SysOrder>(request, response), sysOrder);
 				result = page.getList();
 			}
-			new ExportExcel("订单", SysOrder.class).setDataList(result).write(response, fileName).dispose();
+			new ExportExcel("", SysOrder.class).setDataList(result).write(response, fileName).dispose();
 			return null;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -201,19 +244,32 @@ public class SysOrderController extends BaseController {
 		String customerName = request.getParameter("wfname");
 		String customerPhone = request.getParameter("wfmob");
 		String customerAddress = request.getParameter("wfaddress");
-		String operremarks = request.getParameter("wfguest");
+		String remarks = request.getParameter("wfguest");
 		String linkUrl = request.getParameter("WFDDURL");
+		String wfrnmb = request.getParameter("wfIP"); //下单IP
+		String wfSource = request.getParameter("wfSource");  //下单来路
+		String productType = request.getParameter("productType");  //产品类型
+		if (StringUtils.isEmpty(productType)) {
+			productType = PRO_TYPE_TEA;
+		}
+
+
+//		String callback = request.getParameter("callback");
 
 		if (StringUtils.isEmpty(customerPhone)) {
 			result.put("success", "false");
 			result.put("mes", "客户电话不能为空");
-			return JsonMapper.toJsonString(result);
+			request.setAttribute("error", "客户电话不能为空");
+			return "modules/order/orderfail";
+			//return callback + "(" + JsonMapper.toJsonString(result) + ")";
 		}
 
 		if (StringUtils.isEmpty(product)) {
 			result.put("success", "false");
 			result.put("mes", "选购的产品不能为空");
-			return JsonMapper.toJsonString(result);
+			request.setAttribute("error", "选购的产品不能为空");
+			return "modules/order/orderfail";
+			//return callback + "(" + JsonMapper.toJsonString(result) + ")";
 		}
 
 		sysOrder.setCid(cid);
@@ -223,11 +279,13 @@ public class SysOrderController extends BaseController {
 		sysOrder.setCustomerPhone(customerPhone);
 		sysOrder.setAmount(amount);
 		sysOrder.setLinkAddr(linkUrl);
-		sysOrder.setOperremarks(operremarks);
+		sysOrder.setRemarks(remarks);
 		sysOrder.setOrderDate(new Date());
-		sysOrder.setProducttype(PRO_TYPE_TEA);
+		sysOrder.setProducttype(productType);
 		sysOrder.setStatus(STATE_UNDO);
 		sysOrder.setDelFlag("0");
+		sysOrder.setOrderIP(wfrnmb);
+		sysOrder.setOrderSource(wfSource);
 
 		try {
 			sysOrderService.save(sysOrder);
@@ -240,8 +298,13 @@ public class SysOrderController extends BaseController {
 			result.put("mes", e.getMessage());
 			logger.error("下单失败:\\n" + e.getMessage());
 			e.printStackTrace();
+
+			request.setAttribute("error", "下单失败。");
+			return "modules/order/orderfail";
 		}
 
-		return JsonMapper.toJsonString(result);
+		//return callback + "(" + JsonMapper.toJsonString(result) + ")";
+
+		return "modules/order/ordersuccess";
 	}
 }

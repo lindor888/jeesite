@@ -23,7 +23,9 @@ import com.thinkgem.jeesite.common.utils.CookieUtils;
  * @param <T>
  */
 public class Page<T> {
-	
+
+	private final static int[] PAGE_SIZES = new int[]{50, 200, 300, 500, 800, 1000};
+
 	private int pageNo = 1; // 当前页码
 	private int pageSize = Integer.valueOf(Global.getConfig("page.pageSize")); // 页面大小，设置为“-1”表示不进行分页（分页无效）
 	
@@ -256,9 +258,17 @@ public class Page<T> {
 
 		sb.append("<li class=\"disabled controls\"><a href=\"javascript:\">当前 ");
 		sb.append("<input type=\"text\" value=\""+pageNo+"\" onkeypress=\"var e=window.event||this;var c=e.keyCode||e.which;if(c==13)");
-		sb.append(funcName+"(this.value,"+pageSize+",'"+funcParam+"');\" onclick=\"this.select();\"/> / ");
-		sb.append("<input type=\"text\" value=\""+pageSize+"\" onkeypress=\"var e=window.event||this;var c=e.keyCode||e.which;if(c==13)");
-		sb.append(funcName+"("+pageNo+",this.value,'"+funcParam+"');\" onclick=\"this.select();\"/> 条，");
+		sb.append(funcName+"(this.value,"+pageSize+",'"+funcParam+"');\" onclick=\"this.select();\"/> / 页, 每页");
+		if (true) {
+			sb.append("<select onchange=\"").append(funcName + "(" + pageNo + ",this.value,'" + funcParam + "');\" >");
+			for (int i : PAGE_SIZES) {
+				sb.append("<option ").append(pageSize == i ? "selected" : "").append(">").append(i).append("</option>");
+			}
+			sb.append("</select> 条，");
+		} else {
+			sb.append("<input type=\"text\" value=\""+pageSize+"\" onkeypress=\"var e=window.event||this;var c=e.keyCode||e.which;if(c==13)");
+			sb.append(funcName+"("+pageNo+",this.value,'"+funcParam+"');\" onclick=\"this.select();\"/> 条，");
+		}
 		sb.append("共 " + count + " 条"+(message!=null?message:"")+"</a></li>\n");
 
 		sb.insert(0,"<ul>\n").append("</ul>\n");

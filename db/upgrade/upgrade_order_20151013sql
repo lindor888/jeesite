@@ -1,0 +1,5 @@
+
+-- 订单添加下单页面和下单IP
+ALTER TABLE sys_order add COLUMN order_IP VARCHAR(64) null;
+
+ALTER TABLE sys_order add COLUMN order_source VARCHAR(256) null;
