@@ -136,8 +136,8 @@
 <body>
 
 	<ul class="nav nav-tabs">
-		<li class="active"><a href="${ctx}/order/sysOrder/">订单列表</a></li>
-		<shiro:hasPermission name="order:sysOrder:edit"><li><a href="${ctx}/order/sysOrder/form">订单添加</a></li></shiro:hasPermission>
+		<li class="active"><a href="${ctx}/order/sysOrder/list.do?producttype=${sysOrder.producttype}">订单列表</a></li>
+		<shiro:hasPermission name="order:sysOrder:edit"><li><a href="${ctx}/order/sysOrder/form.do?producttype=${sysOrder.producttype}">订单添加</a></li></shiro:hasPermission>
 
 		<li id="<%=SysOrder.SEARCH_TYPE_MONTH%>_li" class="filter"><a href="javascript:void(0)" onclick="filter('<%=SysOrder.SEARCH_TYPE_MONTH%>')">本月</a></li>
 		<li id="<%=SysOrder.SEARCH_TYPE_WEEK%>_li" class="filter"><a href="javascript:void(0)" onclick="filter('<%=SysOrder.SEARCH_TYPE_WEEK%>')">本周</a></li>
@@ -149,6 +149,7 @@
 		<input id="pageNo" name="pageNo" type="hidden" value="${page.pageNo}"/>
 		<input id="pageSize" name="pageSize" type="hidden" value="${page.pageSize}"/>
 		<input id="selectedValue" name="selectedValue" type="hidden" />
+		<input id="producttype" name="producttype" type="hidden" value="${sysOrder.producttype}" />
 		<ul class="ul-form">
 			<li><label>CID：</label>
 				<form:input path="cid" htmlEscape="false" maxlength="32" class="input-medium"/>

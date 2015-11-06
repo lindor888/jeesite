@@ -37,7 +37,7 @@
 </head>
 <body>
 	<ul class="nav nav-tabs">
-		<li><a href="${ctx}/order/sysOrder/">订单列表</a></li>
+		<li><a href="${ctx}/order/sysOrder/list.do?producttype=${sysOrder.producttype}">订单列表</a></li>
 		<li class="active"><a href="${ctx}/order/sysOrder/form?id=${sysOrder.id}">订单<shiro:hasPermission name="order:sysOrder:edit">${not empty sysOrder.id?'修改':'添加'}</shiro:hasPermission><shiro:lacksPermission name="order:sysOrder:edit">查看</shiro:lacksPermission></a></li>
 	</ul><br/>
 	<form:form id="inputForm" modelAttribute="sysOrder" action="${ctx}/order/sysOrder/changeStatus" method="post" class="form-horizontal">

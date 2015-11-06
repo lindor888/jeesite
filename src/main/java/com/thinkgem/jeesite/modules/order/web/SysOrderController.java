@@ -7,8 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.thinkgem.jeesite.common.mapper.JsonMapper;
-import com.thinkgem.jeesite.common.utils.CalendarUtil;
-import com.thinkgem.jeesite.common.utils.DateUtils;
+import com.thinkgem.jeesite.common.utils.*;
 import com.thinkgem.jeesite.common.utils.excel.ExportExcel;
 import com.thinkgem.jeesite.modules.order.entity.SysOrderSummary;
 import com.thinkgem.jeesite.modules.sys.entity.Log;
@@ -28,7 +27,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.web.BaseController;
-import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.modules.order.entity.SysOrder;
 import com.thinkgem.jeesite.modules.order.service.SysOrderService;
 
@@ -252,7 +250,23 @@ public class SysOrderController extends BaseController {
 		if (StringUtils.isEmpty(productType)) {
 			productType = PRO_TYPE_TEA;
 		}
+		if (StringUtils.isEmpty(wfrnmb)) {
+			wfrnmb = request.getRemoteAddr();
+		}
+		if (!StringUtils.isEmpty(wfrnmb) && StringUtils.isEmpty(wfSource)) {
+			if(UserAgentUtils.isMobileOrTablet(request)) {
+				wfSource = "(手机)-";
+			} else {
+				wfSource = "(电脑)-";
+			}
+			try {
+				wfSource += AddressUtils.getAddress("ip=" + wfrnmb, "utf-8");
 
+			} catch (Exception e) {
+
+				e.printStackTrace();
+			}
+		}
 
 //		String callback = request.getParameter("callback");
 

@@ -52,10 +52,10 @@
 			<if test="dbName == 'mysql'">concat(#{product},'%')</if>
 		</if>
 		<if test="customerPhone != null and customerPhone != ''">
-			AND a.customerPhone LIKE
-			<if test="dbName == 'oracle'">#{product}||'%'</if>
-			<if test="dbName == 'mssql'">#{product}+'%'</if>
-			<if test="dbName == 'mysql'">concat(#{product},'%')</if>
+			AND a.customer_phone LIKE
+			<if test="dbName == 'oracle'">#{customerPhone}||'%'</if>
+			<if test="dbName == 'mssql'">#{customerPhone}+'%'</if>
+			<if test="dbName == 'mysql'">concat(#{customerPhone},'%')</if>
 		</if>
 		<if test="beginOrderDate != null and endOrderDate != null and beginOrderDate != '' and endOrderDate != ''">
 			AND a.order_date BETWEEN #{beginOrderDate} AND #{endOrderDate}
