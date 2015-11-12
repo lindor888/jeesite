@@ -9,7 +9,10 @@
 	<!-- Context ConfigLocation -->
 	<context-param>
 		<param-name>contextConfigLocation</param-name>
-		<param-value>classpath*:/spring-context*.xml</param-value>
+		<param-value>
+			classpath*:/spring-context*.xml
+			classpath:net/bull/javamelody/monitoring-spring-datasource.xml
+		</param-value>
 	</context-param>
 	<listener>
 		<listener-class>com.thinkgem.jeesite.modules.sys.listener.WebContextListener</listener-class>
@@ -177,7 +180,22 @@
 		<servlet-name>ValidateCodeServlet</servlet-name>
 		<url-pattern>/servlet/validateCodeServlet</url-pattern>
 	</servlet-mapping>
-	
+
+	<!--javamelody monitoring -->
+	<filter>
+		<filter-name>monitoring</filter-name>
+		<filter-class>net.bull.javamelody.MonitoringFilter</filter-class>
+	</filter>
+
+	<filter-mapping>
+		<filter-name>monitoring</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+
+	<listener>
+		<listener-class>net.bull.javamelody.SessionListener</listener-class>
+	</listener>
+
 	<!-- FineReport 
 	<servlet>
 		<servlet-name>ReportServer</servlet-name>

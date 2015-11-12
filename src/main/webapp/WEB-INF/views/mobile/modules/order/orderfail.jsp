@@ -169,9 +169,9 @@
   <div class="txt">
     <h2 style="font-weight:600">下单失败</h2>
     <div class="sub_tit">${error}！</div>
-    <div class="sub_tit">请关注“大唐红”公众号<br></div>
-    <img src="http://www.thj521.com/images/erweima.jpg">
-    <div class="sub_tit" >扫描以上二维码，或搜索“<font color="red">datanghongchaju</font>”，关注大唐红微信公众号<br></div>
+    <%--<div class="sub_tit">请关注“大唐红”公众号<br></div>--%>
+    <%--<img src="http://www.thj521.com/images/erweima.jpg">--%>
+    <%--<div class="sub_tit" >扫描以上二维码，或搜索“<font color="red">datanghongchaju</font>”，关注大唐红微信公众号<br></div>--%>
   </div>
   <br>
 </div>
@@ -179,8 +179,7 @@
   <a href="javascript: history.go(-2);" title="立即返回"><span class="shoplk_inner" id="shopName">去<b style="color:#039">大唐红旗舰店首页</b>看看</span></a>
 </p>
 <div style="display:none">
-</div>
-<!-------------------------- 此处添加统计转化代码 -------------------------->
+</div>z
 
 <!-------------------------- 此处添加统计转化代码 -------------------------->
 </body>

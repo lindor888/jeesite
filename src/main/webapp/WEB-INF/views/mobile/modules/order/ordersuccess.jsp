@@ -169,14 +169,14 @@
   <div class="txt">
     <h2 style="font-weight:600">已成功下单</h2>
     <div class="sub_tit" style=" font-family:&#39;微软雅黑&#39;;">客服人员会在24小时内与您联系，请保持电话畅通！</div>
-    <div class="sub_tit" style=" font-family:&#39;微软雅黑&#39;;">查询订单，请关注“大唐红”公众号<br></div>
-    <img src="http://www.thj521.com/images/erweima.jpg">
-    <div class="sub_tit" style=" font-family:&#39;微软雅黑&#39;;margin-top:10px;">扫描以上二维码，或搜索“<font color="red">datanghongchaju</font>”，关注大唐红微信公众号<br></div>
+    <!-- <div class="sub_tit" style=" font-family:&#39;微软雅黑&#39;;">查询订单，请关注“大唐红”公众号<br></div> -->
+    <!-- <img src="http://www.thj521.com/images/erweima.jpg"> -->
+    <!-- <div class="sub_tit" style=" font-family:&#39;微软雅黑&#39;;margin-top:10px;">扫描以上二维码，或搜索“<font color="red">datanghongchaju</font>”，关注大唐红微信公众号<br></div> -->
   </div>
   <br>
 </div>
 <p style="background-color:#FFF;">
-  <a href="javascript: history.go(-2);" title="立即返回"><span class="shoplk_inner" id="shopName">去<b style="color:#039">大唐红旗舰店首页</b>看看</span></a>
+  <a href="javascript: history.go(-2);" title="立即返回"><span class="shoplk_inner" id="shopName">去<b style="color:#039">首页</b>看看</span></a>
 </p>
 <div style="display:none">
 </div>
