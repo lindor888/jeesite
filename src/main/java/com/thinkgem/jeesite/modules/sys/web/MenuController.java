@@ -6,8 +6,10 @@ package com.thinkgem.jeesite.modules.sys.web;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -118,6 +120,66 @@ public class MenuController extends BaseController {
 	public String tree() {
 		return "modules/sys/menuTree";
 	}
+
+
+	/**
+	 * 直接返回MenuTree总是出现中文问号，导致左菜单显示不全
+	 * @param parentId
+	 * @return
+	 */
+	@RequiresPermissions("user")
+	@RequestMapping(value = "treeMenu")
+	@ResponseBody
+	public String treeMenu(HttpServletRequest request, String parentId) {
+		List<Menu> menuList = UserUtils.getMenuList();
+		StringBuffer sb = new StringBuffer("<div class=\"accordion\" id=\"menu-" + parentId + "\">");
+		if (!CollectionUtils.isEmpty(menuList)) {
+			int i = 0;
+			for (Menu menu : menuList) {
+				if (menu.getIsShow().equals("1") && menu.getParentId().equals(parentId != null ? parentId : "1")) {
+					sb.append("<div class=\"accordion-group\">")
+						.append("    <div class=\"accordion-heading\">")
+						.append("		<a class=\"accordion-toggle\" data-toggle=\"collapse\" data-parent=\"#menu-" + menu.getParentId() + "\" ")
+						.append("			data-href=\"#collapse-" + menu.getId() + "\" href=\"#collapse-" + menu.getId() + "\" title=\"" + menu.getRemarks() + "\">" )
+						.append(" 			<i class=\"icon-chevron-" + (i == 0 ? "down" : "right") + "\"></i>&nbsp;" + menu.getName() + "</a>")
+						.append("	 </div>");
+
+					sb.append("<div id=\"collapse-" + menu.getId() + "\" class=\"accordion-body collapse " + (i == 0 ? "in" :"") + "\"> ")
+						.append("<div class=\"accordion-inner\">")
+						.append("	<ul class=\"nav nav-list\">");
+
+					for (Menu menu2 : menuList) {
+						if (menu2.getIsShow().equals("1") && menu2.getParentId().equals(menu.getId())) {
+							sb.append("<li><a data-href=\".menu3-" + menu2.getId() + "\" href=\"" + (menu2.getHref() != null && !menu2.getHref().contains("://") ? (request.getContextPath() + Global.getAdminPath()) : "" ) + (menu2.getHref() != null ? menu2.getHref() : "/404") + "\"" )
+								.append(" target=\"" + (!StringUtils.isEmpty(menu2.getTarget()) ? menu2.getTarget() : "mainFrame") + "\"> ")
+								.append("<i class=\"icon-" + (StringUtils.isNotBlank(menu2.getIcon()) ? menu2.getIcon() : "circle-arrow-right") + "\"> </i>&nbsp;" + menu2.getName() + "</a>")
+								.append("<ul class=\"nav nav-list hide\" style=\"margin:0;padding-right:0;\">");
+
+							for (Menu menu3 : menuList) {
+								if (menu3.getIsShow().equals("1") && menu3.getParentId().equals(menu2.getId())) {
+									sb.append("<li class=\"menu3-" + menu2.getId() + " hide\">")
+										.append(" <a href=\"" + (menu3.getHref() != null && !menu3.getHref().contains("://") ? request.getContextPath() + Global.getAdminPath() : "") + (menu3.getHref() != null ? menu3.getHref() : "/404") + "\"")
+										.append(" target=\"" + (!StringUtils.isEmpty(menu3.getTarget()) ? menu3.getTarget() : "mainFrame") + "\"> ")
+										.append("<i class=\"icon-" + (StringUtils.isNotBlank(menu3.getIcon()) ? menu3.getIcon() : "circle-arrow-right") + "\"> </i>&nbsp;" + menu3.getName() + "</a>")
+										.append("</li>");
+								}
+							}
+
+							sb.append("</ul></li>");
+
+						}
+					}
+					sb.append("</ul>").append("</div></div></div>");
+				}
+				i++;
+			}
+		}
+
+		sb.append("</div>");
+
+		return sb.toString();
+	}
+
 
 	@RequiresPermissions("user")
 	@RequestMapping(value = "treeselect")
